@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title  %}
+Default app
+{% endblock %}
+
+{% block head  %}
+{% include 'head.html' %}
+{% endblock %}
+
+{% block content  %}
+<h1>MPTT Tree</h1>
+
+{% load mptt_tags %}
+<ul>
+    {% recursetree themes %}
+    <li>
+        {{ node.name }}11
+        {% if not node.is_leaf_node %}
+        <ul class="children">
+            {{ children }}
+        </ul>
+        {% endif %}
+    </li>
+    {% endrecursetree %}
+</ul>
+
+{% endblock %}

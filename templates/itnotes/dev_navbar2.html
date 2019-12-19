@@ -1,0 +1,998 @@
+{% extends 'baseheaders.html' %}
+
+{% block title  %}
+Dev treenavbar
+{% endblock %}
+
+{% block appincludes  %}
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<style>
+    html {
+        position: relative;
+        min-height: 100%;
+    }
+
+    body {
+        padding-top: 2rem;
+        margin-bottom: 4.5rem;
+    }
+
+    .wrapper {
+        position: relative;
+        /* overflow-x: hidden; */
+    }
+
+    .footer {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        height: 3.5rem;
+        line-height: 3.5rem;
+        background-color: #ccc;
+    }
+
+    .nav-link:hover {
+        transition: all 0.4s;
+    }
+
+    .nav-link-collapse:after {
+        float: right;
+        content: '\f067';
+        font-family: 'FontAwesome';
+    }
+
+    .note-new::before {
+        content: "\f15c";
+        position: absolute;
+        margin-left: -15px;
+        font-family: 'FontAwesome';
+        font-size: 0.75em;
+    }
+
+    /* .nav-link-show:after {
+        float: right;
+        content: '\f068';
+        font-family: 'FontAwesome';
+    } */
+
+    .nav-item ul.nav-second-level {
+        padding-left: 0;
+    }
+
+    .nav-item ul.nav-second-level>.nav-item {
+        padding-left: 20px;
+    }
+
+    .navbar-expand-lg {
+        background-color: #e7e7e7;
+    }
+
+    .note-group {
+        display: inline-block;
+        border: 1px solid transparent;
+        border-color: rgba(187, 181, 181, 0.3);
+        padding: 0.25rem 0.25rem;
+        width: 90%;
+
+    }
+
+    .note_selected {
+        background-color: silver;
+    }
+
+    .note_active {
+        background-color: #cce5ff;
+
+    }
+
+    .note-editor {
+        background-color: #fff;
+    }
+
+    .note {
+        padding: 0.1rem;
+        /* overflow: hidden;
+        white-space: nowrap;
+        max-width: 90%;
+        text-overflow: ellipsis;         */
+    }
+
+    /*   .note-element {
+        overflow: hidden;
+        white-space: nowrap;
+        padding: 0 5px 0 5px;
+        text-overflow: ellipsis;
+        text-align: left;
+    }  */
+
+    .note-overflow {
+        overflow: hidden;
+        white-space: nowrap;
+        padding: 0 10px 0 5px;
+        /* max-width: 90%; */
+        text-overflow: ellipsis;
+        text-align: left;
+    }
+
+    .nav-link {
+        padding: 0.2rem;
+    }
+
+    .note-group .badge {
+        position: absolute;
+        right: 28px;
+        margin-top: -1.3rem;
+    }
+
+    .navbar {
+        background-color: #ddd;
+    }
+
+    .content {
+        transition: 0.5s;
+        margin-top: 2.5rem;
+    }
+
+    .note i {
+        display: block;
+        width: 5px;
+        height: 5px;
+        background-color: rgb(207, 82, 82);
+        position: relative;
+        border-radius: 40%;
+        left: 190px;
+        top: -10px;
+    }
+
+    /* .note-new span::after {
+        content: '';
+        display: block;
+    } */
+
+    @media (min-width: 992px) {
+        .navbar {
+            background-color: #343a40;
+        }
+
+        .sidenav-btn {
+            display: block;
+            width: 30px;
+            height: 30px;
+            background-color: #ddd;
+            position: absolute;
+            border-radius: 20%;
+            right: -32px;
+            top: 3.5rem;
+        }
+
+        .sidenav-btn span,
+        .sidenav-btn span::before,
+        .sidenav-btn span::after {
+            position: absolute;
+            top: 50%;
+            margin-top: -1px;
+            left: 50%;
+            margin-left: -10px;
+            width: 20px;
+            height: 2px;
+            background-color: rgb(90, 105, 179);
+        }
+
+        .sidenav-btn span::before,
+        .sidenav-btn span::after {
+            content: '';
+            display: block;
+        }
+
+        .sidenav-btn span::before {
+            transform: translateY(-5px);
+        }
+
+        .sidenav-btn span::after {
+            transform: translateY(5px);
+        }
+
+        .sidenav {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 230px;
+            height: calc(100vh);
+            /* margin-top: 3.5rem; */
+            background: #ddd;
+            box-sizing: border-box;
+            border-top: 1px solid rgba(187, 181, 181, 0.3);
+            transition: 0.5s;
+            transform: translateX(-100%);
+            z-index: 99;
+        }
+
+        .sidenav_active {
+            transform: translateX(0%);
+        }
+
+        .navbar-expand-lg .sidenav {
+            flex-direction: column;
+        }
+
+        .content-wrapper {
+            margin-left: 230px;
+        }
+
+        .footer {
+            width: calc(100% - 230px);
+            margin-left: 230px;
+        }
+
+        .content {
+            transition: 0.5s;
+            margin-top: 0;
+        }
+
+        .content_active {
+            transform: translate(230px, 3.5rem);
+            width: calc(100% - 230px);
+            margin-left: inherit;
+
+        }
+
+        .navbar {
+            transition: 0.5s;
+            top: -3.5rem
+        }
+
+        .navbar_active {
+            transform: translateY(3.5rem);
+        }
+    }
+</style>
+<style>
+    ul,
+    #myUL {
+        list-style-type: none;
+        list-style: none;
+        margin: 0;
+    }
+
+    ul,
+    #myUL {
+        list-style-type: none;
+        padding-left: 10px;
+    }
+
+    #myUL {
+        margin: 0;
+        margin-top: 20px;
+    }
+
+    .caret {
+        cursor: pointer;
+        -webkit-user-select: none;
+        /* Safari 3.1+ */
+        -moz-user-select: none;
+        /* Firefox 2+ */
+        -ms-user-select: none;
+        /* IE 10+ */
+        user-select: none;
+    }
+
+    .caret .note-group .note-element::before {
+        content: '\f138';
+        font-family: 'FontAwesome';
+        font-size: 0.9em;
+        color: black;
+        display: inline-block;
+        margin-right: 3px;
+    }
+
+    .caret-down .note-group .note-element::before {
+        /* -ms-transform: rotate(90deg);
+
+        -webkit-transform: rotate(90deg); */
+
+        transform: rotate(90deg);
+    }
+
+    .nested {
+        display: none;
+    }
+
+    .active {
+        display: block;
+    }
+</style>
+{% endblock %}
+
+
+
+{% block body  %}
+{% load mptt_tags %}
+
+<div class="wrapper">
+
+
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+
+        <!-- <a class="navbar-brand" href="#">Sidebar Nav</a> -->
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
+            aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav mr-auto sidenav" id="navAccordion">
+                <a href="#" class="sidenav-btn"><span class="span-btn"></span></a>
+                <div class="btn-group ml-2 mt-1" role="group" aria-label="First group">
+                    <button class="button"><i class="fa fa-home"></i> Home</button>
+                    <button class="button"><i class="fa fa-file"></i></button>
+                    <button class="button"><i class="fa fa-object-group"></i></button>
+                    <button class="button"><i class="fa fa-pencil"></i></button>
+                    <button class="button"><i class="fa fa-trash"></i></button>
+
+                </div>
+
+                <ul id="myUL">
+                    {% recursetree themes %}
+                    {% if not node.is_leaf_node %}
+                    <li class="" id="caret_id{{ node.id }}">
+                        <div class="note caret caret-down">
+
+                            <div class="text-left note-group">
+                                <div class="note-element note-overflow">{{ node.name }}</div>
+                                <span class="badge badge-secondary ml-1">{{ node.items_count}}</span>
+                            </div>
+                        </div>
+                        {% else %}
+                    <li>
+                        <div class="note">
+                            <div class="note-element note-overflow">{{ node.name }}</div>
+                        </div>
+
+                        {% endif %}
+
+
+                        {% if not node.is_leaf_node %}
+                        <ul class="children nested active">
+                            {{ children }}
+
+                        </ul>
+                        {% endif %}
+                    </li>
+                    {% endrecursetree %}
+
+
+                </ul>
+
+            </ul>
+
+
+
+            <form class="form-inline ml-auto mt-2 mt-md-0">
+                <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-light my-2 my-sm-0" type="submit">Search</button>
+            </form>
+        </div>
+    </nav>
+
+
+
+    <div class="container-fluid content ">
+        <div class="alert alert-primary ml-5" role="alert">
+            <div class="note-name">
+                Заметка
+            </div>
+
+        </div>
+
+
+        {% csrf_token %}
+
+        {{form.media}}
+        {{form.content}}
+
+
+        </form>
+
+
+    </div>
+
+
+
+
+</div>
+
+{% endblock %}
+
+
+{% block userscript  %}
+
+<script>
+    let toggler = document.getElementsByClassName("caret");
+    let i;
+
+    for (i = 0; i < toggler.length; i++) {
+        toggler[i].addEventListener("dblclick", function (event) {
+            // console.log(this);
+            // console.log(this.parentElement);
+            // console.log(this.querySelector(".nested"));
+            this.parentElement.querySelector(".nested").classList.toggle("active");
+            this.classList.toggle("caret-down");
+            event.stopPropagation();
+
+        });
+    }
+</script>
+
+<script>
+    let current_notename = '';
+    let post_active = false;
+
+    $('.sidenav-btn').on('click', function () {
+        $('.sidenav').toggleClass('sidenav_active')
+        $('.content').toggleClass('content_active')
+        $('.navbar').toggleClass('navbar_active')
+    })
+    $('.note').on('mouseover', function () {
+        $(this).addClass('note_selected');
+    })
+    $('.note').on('mouseout', function () {
+        $(this).removeClass('note_selected');
+    })
+    $('.note').on('click', function () {
+        $('.note').removeClass('note_active');
+        $(this).addClass('note_active');
+        let input_notename = this.querySelector(".note-element").innerHTML;
+        if (current_notename != input_notename) {
+            current_notename = input_notename;
+            request_content(current_notename);
+        }
+    })
+
+    $('.button').on('click', function () {
+        console.log(this);
+        let currentBtn = this.querySelector("i").classList;
+        if (currentBtn.length > 0) {
+            if (currentBtn[0] = 'fa' && currentBtn.length > 1) {
+                switch (currentBtn[1]) {
+                    case 'fa-pencil':
+                        edit_current_namenote();
+                        break;
+                    case 'fa-file':
+                        new_note();
+                        break;
+                    case 'fa-trash':
+                        delete_note();
+                        break;
+                    case 'fa-object-group':
+                        new_note_in();
+                        break;
+                    default:
+                        // console.log('Error button!');
+                        swal("Error click button!", "You clicked the button!", "error");
+                        break;
+                }
+            }
+
+        }
+
+
+    })
+
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    function post_update_note(dictnote, note_element, post_current = false) {
+        // console.log(post_update_note);
+        let httpurl = "http://py.isu.ru:8000/notes/noteupdate/";
+        fetch(httpurl + dictnote.notename + '/', {
+            method: "POST",
+            credentials: "same-origin",
+            headers: {
+                "X-CSRFToken": getCookie("csrftoken"),
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            },
+            // body: JSON.stringify(dictnote)
+            body: JSON.stringify({
+                tittle: 'update',
+                content: dictnote,
+            })
+        }).then(function (response) {
+            return response.json();
+        }).then(function (data) {
+            console.log("Data is ok", data);
+            if (data.Error) {
+                note_element.innerHTML = current_notename;
+                swal(data.ErrorMsg, "Для закрытия окна нажмите на кнопку!", "error");
+                // alert(data.ErrorMsg);
+            } else {
+                if (post_current) {
+                    let input_notename = note_element.innerHTML;
+                    console.log(input_notename);
+                    if (current_notename != input_notename) {
+                        current_notename = input_notename;
+                        request_content(current_notename);
+                    }
+                }
+            }
+        }).catch(function (ex) {
+            console.log("parsing failed", ex);
+        });
+    }
+
+    function post_add_note(dictnote, note_element, post_current = false) {
+        let httpurl = "http://py.isu.ru:8000/notes/notecreate/";
+        fetch(httpurl + dictnote.notename + '/', {
+            method: "POST",
+            credentials: "same-origin",
+            headers: {
+                "X-CSRFToken": getCookie("csrftoken"),
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            },
+            // body: JSON.stringify(dictnote)
+            body: JSON.stringify({
+                tittle: 'Create',
+                content: dictnote
+            })
+        }).then(function (response) {
+            return response.json();
+        }).then(function (data) {
+            console.log("Data is ok", data);
+            if (data.Error) {
+                note_element.innerHTML = current_notename;
+                swal(data.ErrorMsg, "Для закрытия окна нажмите на кнопку!", "error");
+                // alert(data.ErrorMsg);
+            } else {
+                console.log(note_element);
+                note_element.classList.remove('note-new');
+                if (post_current) {
+                    let input_notename = note_element.innerHTML;
+                    // console.log(input_notename);
+                    if (current_notename != input_notename) {
+                        current_notename = input_notename;
+                        request_content(current_notename);
+                    }
+                }
+            }
+        }).catch(function (ex) {
+            console.log("parsing failed", ex);
+        });
+    }
+
+    function post_delete_note(dictnote, current_noteblock) {
+        let httpurl = "http://py.isu.ru:8000/notes/notedelete/";
+        fetch(httpurl + dictnote.notename + '/', {
+            method: "POST",
+            credentials: "same-origin",
+            headers: {
+                "X-CSRFToken": getCookie("csrftoken"),
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            },
+            // body: JSON.stringify(dictnote)
+            body: JSON.stringify({
+                tittle: 'Create',
+                content: dictnote
+            })
+        }).then(function (response) {
+            return response.json();
+        }).then(function (data) {
+            console.log("Data is ok", data);
+            if (data.Error) {
+                swal(data.ErrorMsg, "Для закрытия окна нажмите на кнопку!", "error");
+                // alert(data.ErrorMsg);
+            } else {
+                current_noteblock.remove();
+                swal("Заметка удалена!", {
+                    icon: "success",
+                });
+
+            }
+        }).catch(function (ex) {
+            console.log("parsing failed", ex);
+        });
+    }
+
+    function end_edit_current_namenote(current_noteblock, current_note_element, post_current = false, is_new = false) {
+        current_note_element.contentEditable = false;
+        current_noteblock.classList.remove('note-editor');
+        let note_post_dict = {
+            notename: current_notename,
+            notename_update: current_note_element.innerHTML,
+            content: usereditor.getMarkdown()
+        };
+        current_note_element.classList.add('note-overflow')
+        // console.log('post_current');
+        // console.log(post_current);  
+        if (is_new) {
+            //создаем элемент
+            let parentNoteUl = current_noteblock.parentNode.parentNode;
+            // console.log(parentNoteUl);
+            // console.log('создаем элемент');
+            let isEmptyParent = true;
+            let NameParent = '';
+            if (parentNoteUl.id != 'myUL') {
+                isEmptyParent = false;
+                NameParent = parentNoteUl.parentNode.querySelector(".caret .note-element").innerHTML;
+                // console.log(NameParent);
+                // console.log('не пустой роsдитель');
+            }
+            note_post_dict = {
+                notename: current_notename,
+                notename_update: current_note_element.innerHTML,
+                empty_parent: isEmptyParent,
+                name_parent: NameParent,
+                content: usereditor.getMarkdown()
+            };
+            post_add_note(note_post_dict, current_note_element, post_current)
+        } else {
+            // if(note_post_dict[])
+            // console.log(note_post_dict['notename']);
+            // console.log(note_post_dict['notename_update']);
+            if (note_post_dict['notename'] != note_post_dict['notename_update']) {
+                post_update_note(note_post_dict, current_note_element, post_current)
+            }
+
+        }
+
+    }
+
+    //редактирование текущей заметки
+    function edit_current_namenote() {
+        // console.log('Edit ')
+        console.log('Edit ')
+        // console.log(usereditor.getMarkdown());
+        // console.log(usereditor.getHTML());
+        // console.log('pH: ', usereditor.getPreviewedHTML());
+
+
+        let current_noteblock = document.querySelector(".note_active");
+        let current_note_element = document.querySelector(".note_active .note-element");
+        let current_note_new = current_noteblock.querySelector(".note-new");
+        let is_new = false;
+        if (current_note_new != null) {
+            is_new = true;
+        }
+
+        if (current_note_element != null) {
+            current_note_element.onfocusout = function () {
+                // console.log("onfocusout");
+                // console.log(post_active);
+                if (post_active) {
+                    end_edit_current_namenote(current_noteblock, current_note_element, false, is_new);
+                }
+                post_active = false;
+            }
+            current_note_element.onkeypress = function (event) {
+                // console.log("onkeyup");   
+                // console.log(event.keyCode);   
+                if (event.keyCode == 13) {
+                    // console.log(event.keyCode);
+                    post_active = false;
+                    end_edit_current_namenote(current_noteblock, current_note_element, true, is_new);
+                    // console.log(post_active); 
+                    // request_content(current_notename);
+
+                    // event.stopPropagation();
+                }
+            }
+            // console.log('++++');
+            // console.log(current_note_element.classList);
+            post_active = true;
+            current_note_element.classList.remove('note-overflow')
+            // console.log(current_note_element);
+            current_noteblock.classList.toggle('note-editor');
+            current_note_element.contentEditable = true;
+            //передаем фокус в элемент и устанавливаем курсор в конец
+            const range = document.createRange();
+            range.selectNodeContents(current_note_element);
+            range.collapse(false);
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+        } else {
+            console.log("Error edit!");
+        }
+
+    }
+
+    // function note_selected(s_note) {             
+    //     s_note.classList.add('note_selected');
+    // }
+
+    note_selected_mouseover = function (event) {
+        this.classList.add('note_selected');
+    }
+
+    note_selected_mouseout = function (event) {
+        this.classList.remove('note_selected');
+    }
+
+    note_dblclick_caret = function (event) {
+        this.parentElement.querySelector(".nested").classList.toggle("active");
+        this.classList.toggle("caret-down");
+        event.stopPropagation();
+    }
+
+    note_new_click = function (event) {
+        $('.note').removeClass('note_active');
+        this.classList.add('note_active');
+        let input_notename = this.querySelector(".note-element").innerHTML;
+        let selector_notenew = this.querySelector(".note-new");
+        // let input_notename
+        if (current_notename != input_notename) {
+            current_notename = input_notename;
+            if (selector_notenew == null) {
+                request_content(current_notename);
+            } else {
+                new_content();
+            }
+        }
+    }
+
+    function new_note() {
+        let current_noteblock = document.querySelector(".note_active");
+        let current_ul_noteblock = document.querySelector("#myUL");
+        let current_li_noteblock = null;
+        let is_append = false;
+        if (current_noteblock != null) {
+            current_li_noteblock = current_noteblock.parentNode;
+            current_ul_noteblock = current_li_noteblock.parentNode;
+            console.log(current_ul_noteblock);
+        } else {
+            current_li_noteblock = current_ul_noteblock.querySelector(".note").parentNode;
+            console.log(current_li_noteblock);
+            is_append = true;
+        }
+
+        let NewLiNote = document.createElement("li");
+        let NewNote = document.createElement("div");
+
+        NewLiNote.appendChild(NewNote);
+        let NewNoteElement = document.createElement("div");
+        NewNote.appendChild(NewNoteElement);
+        NewNoteElement.innerHTML = 'Новая заметка';
+        if (is_append) {
+            current_ul_noteblock.appendChild(NewLiNote);
+        } else {
+            current_ul_noteblock.insertBefore(NewLiNote, current_li_noteblock.nextSibling);
+        }
+
+        NewNote.classList.add('note');
+        NewNoteElement.classList.add('note-element');
+        NewNoteElement.classList.add('note-overflow');
+        NewNoteElement.classList.add('note-new');
+
+        NewNote.addEventListener("mouseover", note_selected_mouseover);
+        NewNote.addEventListener("mouseout", note_selected_mouseout);
+        NewNote.addEventListener("click", note_new_click);
+
+
+    }
+
+    function new_note_in() {
+        let current_noteblock = document.querySelector(".note_active");
+        if (current_noteblock != null) {
+            let current_li_noteblock = current_noteblock.parentNode;
+            let current_ul_noteblock = current_li_noteblock.parentNode;
+
+            let current_note_new = current_noteblock.querySelector(".note-new");
+            let is_new = false;
+            if (current_note_new != null) {
+                is_new = true;
+                // alert("Для незапписанной заметки нельзя создавать группу!")
+                swal("Для незапписанной заметки нельзя создавать группу!", "Для закрытия окна нажмите на кнопку!",
+                    "error");
+                return;
+            }
+
+
+
+            if (!is_new) {
+                if (current_noteblock.classList.contains('caret')) {
+                    let current_li_noteblock = current_noteblock.parentNode;
+                    console.log("li:", current_li_noteblock);
+
+                    let current_ul_noteblock = current_li_noteblock.querySelector(".children ");
+                    console.log("ul:", current_ul_noteblock);
+
+                    let NewLiNote = document.createElement("li");
+                    let NewNote = document.createElement("div");
+                    NewLiNote.appendChild(NewNote);
+                    let NewNoteElement = document.createElement("div");
+                    NewNote.appendChild(NewNoteElement);
+                    NewNoteElement.innerHTML = 'Новая заметка';
+                    current_ul_noteblock.appendChild(NewLiNote);
+                    NewNote.classList.add('note');
+                    NewNoteElement.classList.add('note-element');
+                    NewNoteElement.classList.add('note-overflow');
+                    NewNoteElement.classList.add('note-new');
+                    NewNote.addEventListener("mouseover", note_selected_mouseover);
+                    NewNote.addEventListener("mouseout", note_selected_mouseout);
+                    NewNote.addEventListener("click", note_new_click);
+
+
+                } else {
+                    let current_li_noteblock = current_noteblock.parentNode;
+                    current_noteblock.classList.add('caret');
+                    current_noteblock.classList.add('caret-down');
+                    current_noteelement = current_noteblock.querySelector(".note-element")
+
+                    let NewGroupText = document.createElement("div");
+                    NewGroupText.classList.add('text-left');
+                    NewGroupText.classList.add('note-group');
+                    let SpanBadge = document.createElement("span");
+                    SpanBadge.classList.add('badge');
+                    SpanBadge.classList.add('badge-secondary');
+                    SpanBadge.classList.add('ml-1');
+                    SpanBadge.innerHTML = '1';
+                    NewGroupText.appendChild(current_noteelement);
+                    NewGroupText.appendChild(SpanBadge);
+                    current_noteblock.appendChild(NewGroupText);
+
+                    let NewUlChildren = document.createElement("ul");
+                    NewUlChildren.classList.add('children');
+                    NewUlChildren.classList.add('nested');
+                    NewUlChildren.classList.add('active');
+
+
+                    let NewLiNote = document.createElement("li");
+                    let NewNote = document.createElement("div");
+                    NewLiNote.appendChild(NewNote);
+                    let NewNoteElement = document.createElement("div");
+                    NewNote.appendChild(NewNoteElement);
+                    NewNoteElement.innerHTML = 'Новая заметка';
+                    NewUlChildren.appendChild(NewLiNote);
+                    NewNote.classList.add('note');
+                    NewNoteElement.classList.add('note-element');
+                    NewNoteElement.classList.add('note-overflow');
+                    NewNoteElement.classList.add('note-new');
+                    NewNote.addEventListener("mouseover", note_selected_mouseover);
+                    NewNote.addEventListener("mouseout", note_selected_mouseout);
+                    NewNote.addEventListener("click", note_new_click);
+
+                    current_noteblock.addEventListener("dblclick", note_dblclick_caret);
+
+                    current_li_noteblock.appendChild(NewUlChildren);
+
+
+
+                    // <div class="note note_active">
+                    //         <div class="note-element note-overflow">Новая заметкаnnn</div>
+                    //     </div>
+
+                    // <div class="note caret caret-down">
+                    //     <div class="text-left note-group">
+                    //         <div class="note-element">Группа21</div>
+                    //         <span class="badge badge-secondary ml-1">2</span>
+                    //     </div>
+                    // </div>
+
+                    // <ul class="children nested active">                            
+                    //         <li>
+                    //             <div class="note note_active">
+                    //                 <div class="note-element note-overflow">Новая заметкаnnn</div>
+                    //             </div>                                                                
+                    //         </li>
+                    // </ul>
+
+
+                    // <div class="note caret caret-down">
+
+                    // <div class="text-left note-group">
+                    // <div class="note-element note-overflow">name</div>
+                    // <span class="badge badge-secondary ml-1">2</span>
+                    // </div>
+                    // </div>
+
+                    // <div class="note caret caret-down note_active">
+                    //             <div class="note-element note-overflow">Заметка3</div>
+                    //         </div>
+
+                    // <div class="note caret caret-down note_active">
+
+                    //             <div class="text-left note-group">
+                    //                 <div class="note-element note-overflow">Заметка3</div>
+                    //                 <span class="badge badge-secondary ml-1">1</span>
+                    //             </div>
+                    //     </div>
+
+                }
+
+            }
+
+
+        } else {
+            swal("Выберите заметку!", "Для закрытия окна нажмите на кнопку!", "error");
+            // alert("Выберите элемент!")
+        }
+
+    }
+
+    function delete_note() {
+        // let result = confirm('Вы точно хотите удалить выделенную заметку?');
+        let current_noteblock = document.querySelector(".note_active");
+        if (current_noteblock != null) {
+            swal({
+                    title: "Вы уверены?",
+                    text: "После удаления заметки Вы не сможете ее восстановить (плюс вложенные заметки)!",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true,
+                })
+                .then((willDelete) => {
+                    if (willDelete) {
+                        let notename = document.querySelector(".note_active .note-element").innerHTML;
+                        if (current_noteblock.classList.contains('caret')) {
+                            current_noteblock = current_noteblock.parentNode;
+                            console.log("Группа");
+                        }
+                        let note_post_dict = {
+                            notename: notename
+                        };
+
+                        post_delete_note(note_post_dict, current_noteblock);
+
+
+                    } else {
+                        swal("Ваша заметка сохранена!");
+                    }
+                });
+        } else {
+            swal("Выберите элемент!", "Для закрытия окна нажмите на кнопку!", "error");
+        }
+        // if (result) {
+
+        // }
+
+    }
+
+    function new_content() {
+        document.querySelector(".note-name").innerHTML = "Введите имя заметки"
+        usereditor.setMarkdown("");
+        usereditor.insertValue('');
+        usereditor.focus();
+    }
+
+    function request_content(notename) {
+        if (notename != "") {
+            let httpurl = "http://py.isu.ru:8000/notes/note/"
+            fetch(httpurl + notename)
+                .then(function (resp) {
+                    // console.log(resp);
+                    // console.log(resp.text());
+                    return resp.json();
+                }).then(function (data) {
+                    if (!data.Error) {
+                        document.querySelector(".note-name").innerHTML = data.NameNote
+                        usereditor.setMarkdown(data.ContentNote);
+                        usereditor.insertValue('');
+                        usereditor.focus();
+                    } else {
+                        document.querySelector(".note-name").innerHTML = "Error"
+                        usereditor.setMarkdown("");
+                        usereditor.insertValue('');
+                        usereditor.focus();
+                    }
+
+
+                });
+        }
+    }
+</script>
+
+{% endblock %}

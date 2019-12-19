@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title  %}
+Default app
+{% endblock %}
+
+{% block head  %}
+{% include 'head.html' %}
+{% endblock %}
+
+{% block content  %}
+<h1>it notes!</h1>
+<!-- <style>
+    .subtree {
+        padding-left: 20px;
+        /* display: none; */
+    }
+
+    /* .roll .subtree {
+        display: none;
+    }
+
+    .roll:hover .subtree {
+        display: block;
+    } */
+</style> -->
+
+<div class="container-fluid">
+    <div class="row">
+
+        <div class="col-md-4 offset-md-4">
+            <ul id="treeview">
+                <li data-icon-cls="fa fa-inbox" data-expanded="true">Inbox
+                    <ul>
+                        <li><b>Today (2)</b></li>
+                        <li>Monday</li>
+                        <li>Last Week</li>
+                    </ul>
+                </li>
+                <li data-icon-cls="fa fa-trash">Trash
+                </li>
+                <li data-icon-cls="fa fa-calendar">Calendar
+                    <ul>
+                        <li>Day</li>
+                        <li>Week</li>
+                        <li>Month</li>
+                    </ul>
+                </li>
+                <li data-icon-cls="fa fa-user">Contacts
+                    <ul>
+                        <li>Alexander Stein</li>
+                        <li>John Doe</li>
+                        <li>Paul Smith</li>
+                        <li>Steward Lynn</li>
+                    </ul>
+                </li>
+                <li data-icon-cls="fa fa-folder">Folders
+                    <ul>
+                        <li>Backup</li>
+                        <li>Deleted</li>
+                        <li>Projects</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <div class="container col-sm-3">
+
+
+
+            <div class="list-group roll">
+
+                <a href="#" class="list-group-item list-group-item-action active ">
+                    1C заметки
+                </a>
+                <div class="subtree">
+                    <a href="#" class="list-group-item list-group-item-action">h1</a>
+                    <div class="subtree">
+                        <a href="#" class="list-group-item list-group-item-action">h1</a>
+                        <a href="#" class="list-group-item list-group-item-action">h2</a>
+                        <a href="#" class="list-group-item list-group-item-action">h3</a>
+                        <a href="#" class="list-group-item list-group-item-action">h4</a>
+                    </div>
+                    <a href="#" class="list-group-item list-group-item-action">h2</a>
+                    <a href="#" class="list-group-item list-group-item-action">h3</a>
+                    <a href="#" class="list-group-item list-group-item-action">h4</a>
+                </div>
+                <!--a href="#" class="list-group-item list-group-item-action">Подключение</a>
+                <a href="#" class="list-group-item list-group-item-action">Morbi leo risus</a>
+                <a href="#" class="list-group-item list-group-item-action">Porta ac consectetur ac</a>
+                <a href="#" class="list-group-item list-group-item-action disabled" tabindex="-1"
+                    aria-disabled="true">Vestibulum at eros</a-->
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
